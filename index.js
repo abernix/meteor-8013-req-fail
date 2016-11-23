@@ -22,13 +22,13 @@ function processResponse(test, response) {
   console.log(" %s Response callback", test);
 }
 
+var https = require('https');
+var agent = new https.Agent({ keepAlive: false });
+
 initHash("A");
 request({
     url: somePackage,
-    agentClass: require('https').Agent,
-    agentOptions: {
-      keepAlive: false,
-    },
+    agent: agent,
   })
   .on('error', function (error) { processError("A", error); })
   .on('data', function(data) {
@@ -45,10 +45,7 @@ initHash("B");
 request(
   {
     url: somePackage,
-    agentClass: require('https').Agent,
-    agentOptions: {
-      keepAlive: false,
-    },
+    agent: agent,
   },
   function (error, response, body) {
     if (error) {
