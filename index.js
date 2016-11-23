@@ -7,7 +7,7 @@ var crypto = require('crypto');
 
 var hash = {};
 
-var somePackage = "https://d3fm2vapipm3k9.cloudfront.net/builds/EXSxwGqYjjJKh3WMJ/1477416387312/oW5pojeAuq/fastclick-1.0.13-os+web.browser+web.cordova.tgz";
+var somePackage = "http://d3fm2vapipm3k9.cloudfront.net/builds/EXSxwGqYjjJKh3WMJ/1477416387312/oW5pojeAuq/fastclick-1.0.13-os+web.browser+web.cordova.tgz";
 
 function initHash(test) {
   return hash[test] || (hash[test] = crypto.createHash('md5'));
@@ -22,13 +22,16 @@ function processResponse(test, response) {
   console.log(" %s Response callback", test);
 }
 
+var http = require('http');
 var https = require('https');
-var agent = new https.Agent({ keepAlive: false });
+
+var agentHttp = new http.Agent({ keepAlive: true });
+var agentHttps = new https.Agent({ keepAlive: true });
 
 initHash("A");
 request({
     url: somePackage,
-    agent: agent,
+    agent: agentHttp,
   })
   .on('error', function (error) { processError("A", error); })
   .on('data', function(data) {
@@ -45,7 +48,7 @@ initHash("B");
 request(
   {
     url: somePackage,
-    agent: agent,
+    agent: agentHttp,
   },
   function (error, response, body) {
     if (error) {
