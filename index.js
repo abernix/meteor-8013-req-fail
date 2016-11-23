@@ -28,11 +28,14 @@ var https = require('https');
 var agentHttp = new http.Agent({ keepAlive: true });
 var agentHttps = new https.Agent({ keepAlive: true });
 
+var requestOptions = {
+  url: somePackage,
+  agent: agentHttp,
+  encoding: null,
+}
+
 initHash("A");
-request({
-    url: somePackage,
-    agent: agentHttp,
-  })
+request(requestOptions)
   .on('error', function (error) { processError("A", error); })
   .on('data', function(data) {
     hash.A.update(data);
@@ -46,15 +49,13 @@ request({
 
 initHash("B");
 request(
-  {
-    url: somePackage,
-    agent: agentHttp,
-  },
+  requestOptions,
   function (error, response, body) {
     if (error) {
       processError("B", error);
     } else {
       processResponse("B", response);
+      fs.writeFile("testB-2.tgz", body);
       hash.B.update(body);
       console.log("HashB is", hash.B.digest("hex"))
     }
