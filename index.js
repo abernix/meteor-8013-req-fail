@@ -7,7 +7,7 @@ var crypto = require('crypto');
 
 var hash = {};
 
-var somePackage = "http://d3fm2vapipm3k9.cloudfront.net/builds/EXSxwGqYjjJKh3WMJ/1477416387312/oW5pojeAuq/fastclick-1.0.13-os+web.browser+web.cordova.tgz";
+var somePackage = "https://d3fm2vapipm3k9.cloudfront.net/builds/EXSxwGqYjjJKh3WMJ/1477416387312/oW5pojeAuq/fastclick-1.0.13-os+web.browser+web.cordova.tgz";
 
 function initHash(test) {
   return hash[test] || (hash[test] = crypto.createHash('md5'));
