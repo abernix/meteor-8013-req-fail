@@ -22,6 +22,14 @@ function processResponse(test, response) {
   console.log(" %s Response callback", test);
 }
 
+function hashUpdate(test, data) {
+  return initHash(test).update(data);
+}
+
+function finish(test) {
+  console.log("Hash%s is", test, hash[test].digest("hex"));
+}
+
 var http = require('http');
 var https = require('https');
 
@@ -30,34 +38,39 @@ var agentHttps = new https.Agent({ keepAlive: true });
 
 var requestOptions = {
   url: somePackage,
-  agent: agentHttp,
+  agent: agentHttps,
   encoding: null,
 }
 
-initHash("A");
-request(requestOptions)
-  .on('error', function (error) { processError("A", error); })
-  .on('data', function(data) {
-    hash.A.update(data);
-  })
-  .on('response', function (response) { processResponse("A", response); })
-  .pipe(fs.createWriteStream('testA.tgz'))
-  .on('finish', function () {
-    console.log("HashA is", hash.A.digest("hex"))
-  })
-;
+function doTest(test, f) {
+  var outputFile = "test" + test + ".tgz";
+  f(test, outputFile);
+}
 
-initHash("B");
-request(
-  requestOptions,
-  function (error, response, body) {
-    if (error) {
-      processError("B", error);
-    } else {
-      processResponse("B", response);
-      fs.writeFile("testB-2.tgz", body);
-      hash.B.update(body);
-      console.log("HashB is", hash.B.digest("hex"))
+doTest("A", function (test, outputFile) {
+  initHash(test);
+  request(requestOptions)
+    .on('error', function (error) { processError(test, error); })
+    .on('data', function(data) { hashUpdate(test, data); })
+    .on('response', function (response) { processResponse(test, response); })
+    .pipe(fs.createWriteStream(outputFile))
+    .on('finish', function () { finish(test); })
+  ;
+});
+
+doTest("B", function (test, outputFile) {
+  initHash(test);
+  request(
+    requestOptions,
+    function (error, response, body) {
+      if (error) {
+        processError(test, error);
+      } else {
+        processResponse(test, response);
+        fs.writeFile(outputFile, body);
+        hashUpdate(test, body);
+        finish(test);
+      }
     }
-  })
-  .pipe(fs.createWriteStream("testB.tgz"));
+  );
+});
