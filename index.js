@@ -38,7 +38,7 @@ var agentHttps = new https.Agent({ keepAlive: true });
 
 var requestOptions = {
   url: somePackage,
-  agent: agentHttps,
+  // agent: agentHttps,
   encoding: null,
 }
 
