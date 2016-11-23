@@ -24,13 +24,13 @@ function processResponse(test, response) {
 
 initHash("A");
 request(somePackage)
-  .on('error', error => processError("A", error))
+  .on('error', function (error) { processError("A", error); })
   .on('data', function(data) {
     hash.A.update(data);
   })
-  .on('response', response => processResponse("A", response))
+  .on('response', function (response) { processResponse("A", response); })
   .pipe(fs.createWriteStream('testA.tgz'))
-  .on('finish', () => {
+  .on('finish', function () {
     console.log("HashA is", hash.A.digest("hex"))
   })
 ;
