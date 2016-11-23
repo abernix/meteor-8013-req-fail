@@ -25,6 +25,7 @@ function processResponse(test, response) {
 initHash("A");
 request({
     url: somePackage,
+    agentClass: require('https').Agent,
     agentOptions: {
       keepAlive: false,
     },
@@ -44,6 +45,7 @@ initHash("B");
 request(
   {
     url: somePackage,
+    agentClass: require('https').Agent,
     agentOptions: {
       keepAlive: false,
     },
