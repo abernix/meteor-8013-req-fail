@@ -23,7 +23,12 @@ function processResponse(test, response) {
 }
 
 initHash("A");
-request(somePackage)
+request({
+    url: somePackage,
+    agentOptions: {
+      keepAlive: false,
+    },
+  })
   .on('error', function (error) { processError("A", error); })
   .on('data', function(data) {
     hash.A.update(data);
@@ -36,7 +41,14 @@ request(somePackage)
 ;
 
 initHash("B");
-request(somePackage, function (error, response, body) {
+request(
+  {
+    url: somePackage,
+    agentOptions: {
+      keepAlive: false,
+    },
+  },
+  function (error, response, body) {
     if (error) {
       processError("B", error);
     } else {
@@ -44,4 +56,5 @@ request(somePackage, function (error, response, body) {
       hash.B.update(body);
       console.log("HashB is", hash.B.digest("hex"))
     }
-  }).pipe(fs.createWriteStream("testB.tgz"));
+  })
+  .pipe(fs.createWriteStream("testB.tgz"));
